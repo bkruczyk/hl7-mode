@@ -27,7 +27,9 @@
 ;;; Code:
 
 (defvar hl7-mode-font-lock-keywords
-  '(("^\\(...\\)|" . 1)))
+  (list
+   '("^\\(...\\)|" (1 font-lock-keyword-face))
+   '("\\^\\||\\|~\\|\\&\\|\\\\" . font-lock-constant-face)))
 
 (define-derived-mode hl7-mode fundamental-mode "HL7"
   "Major mode for editing HL7v2 messages"
