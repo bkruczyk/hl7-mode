@@ -31,8 +31,26 @@
    '("^\\(...\\)|" (1 font-lock-keyword-face))
    '("\\^\\||\\|~\\|\\&\\|\\\\" . font-lock-constant-face)))
 
+(defun hl7-mode-forward-node ()
+  "Go to next HL7 field, component or subcomponent."
+  (interactive)
+  (goto-char (re-search-forward "[|^&]")))
+
+(defun hl7-mode-backward-node ()
+  "Go to previous HL7 field, component or subcomponent."
+  (interactive)
+  (goto-char (re-search-backward "[|^&]")))
+
+(defvar hl7-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map [tab] 'hl7-mode-forward-node)
+    (define-key map [backtab] 'hl7-mode-backward-node)
+    map))
+
 (define-derived-mode hl7-mode fundamental-mode "HL7"
-  "Major mode for editing HL7v2 messages"
+  "Major mode for editing HL7v2 messages.
+
+\\{hl7-mode-map}"
   (set (make-local-variable 'font-lock-defaults) '(hl7-mode-font-lock-keywords)))
 
 (provide 'hl7-mode)
