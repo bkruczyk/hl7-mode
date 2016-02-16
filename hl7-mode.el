@@ -47,11 +47,46 @@
     (define-key map [backtab] 'hl7-mode-backward-node)
     map))
 
+(defun hl7-mode-tag-thing-at-point ()
+  "Get the tag of thing at point."
+  (interactive)
+  (save-excursion
+    (let* ((end (point))
+           (start (re-search-backward "^"))
+           (i start)
+           (c (char-after start))
+           (field 0)
+           (comp 1)
+           (subcomp 1)
+           (header (buffer-substring-no-properties start (+ start 3))))
+
+      (while (< i end)
+        (cond ((char-equal ?| c)
+               (progn
+                 (setq field (1+ field))
+                 (setq comp 1)
+                 (setq subcomp 1)))
+              ((char-equal ?^ c)
+               (progn
+                 (setq comp (1+ comp))
+                 (setq subcomp 1)))
+              ((char-equal ?& c)
+               (setq subcomp (1+ subcomp))))
+        (setq i (1+ i))
+        (setq c (char-after i)))
+
+      (if (< field 1)
+          nil
+          (format "%s-%s.%s.%s" header field comp subcomp)))))
+
 (define-derived-mode hl7-mode fundamental-mode "HL7"
   "Major mode for editing HL7v2 messages.
 
 \\{hl7-mode-map}"
-  (set (make-local-variable 'font-lock-defaults) '(hl7-mode-font-lock-keywords)))
+  (set (make-local-variable 'font-lock-defaults) '(hl7-mode-font-lock-keywords))
+  (set (make-local-variable 'eldoc-documentation-function) 'hl7-mode-tag-thing-at-point)
+  (eldoc-add-command "hl7-mode-forward-node" "hl7-mode-backward-node")
+  (eldoc-mode +1))
 
 (provide 'hl7-mode)
 
