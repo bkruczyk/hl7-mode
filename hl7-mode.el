@@ -79,6 +79,7 @@
           nil
           (format "%s-%s.%s.%s" header field comp subcomp)))))
 
+;;;###autoload
 (define-derived-mode hl7-mode fundamental-mode "HL7"
   "Major mode for editing HL7v2 messages.
 
